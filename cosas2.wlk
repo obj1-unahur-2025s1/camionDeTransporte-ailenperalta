@@ -2,6 +2,10 @@ object knightRider {
     method peso() = 500
 
     method peligrosidad() = 10
+
+    method bultosQueOcupa() = 1
+
+    method sufrirConsecuenciaDeLaCarga() {}
 }
 
 object bumblebee {
@@ -20,6 +24,12 @@ object bumblebee {
     method peso() = 800
 
     method peligrosidad() = if (estaComoRobot) 30 else 15   //expresion ternaria (no necesita puntos ni llaves)
+
+    method bultosQueOcupa() = 2
+
+    method sufrirConsecuenciaDeLaCarga() {
+        self.transformarseEnRobot()
+    }
 }
 
 object paqueteDeLadrillos {
@@ -32,6 +42,16 @@ object paqueteDeLadrillos {
     method peso() = 2 * cantidad
 
     method peligrosidad() = 2
+
+    method bultosQueOcupa() = if (cantidad <= 100) 1 
+                              else if (cantidad.between(101, 300)) 2 
+                              else 3 
+
+    //method bultosQueOcupa() = (2.min(1.max(cantidad-99))).max(3.min(cantidad-298))                          
+
+    method sufrirConsecuenciaDeLaCarga() {
+        cantidad += 12
+    }
 }
 
 object arena {
@@ -47,6 +67,12 @@ object arena {
     method peso() = peso           //getter 
 
     method peligrosidad() = 1
+
+    method bultosQueOcupa() = 1
+
+    method sufrirConsecuenciaDeLaCarga() {
+        peso = 0.max(peso - 10)
+    }
 }
 
 object bateriaAntiaerea {
@@ -65,6 +91,12 @@ object bateriaAntiaerea {
     method peso() = if (tieneMisiles) 300 else 200
 
     method peligrosidad() = if (tieneMisiles) 100 else 0
+
+    method bultosQueOcupa() = if (tieneMisiles) 2 else 1 
+
+    method sufrirConsecuenciaDeLaCarga() {
+        self.cargarMisiles()    
+    }
 }
 
 object contenedorPortuario {
@@ -89,12 +121,24 @@ object contenedorPortuario {
     method peligrosidad() = if (cosas.isEmpty()) 0 else self.mayorPeligrosidad()
 
     method mayorPeligrosidad() = cosas.max({c => c.peligrosidad()}).peligrosidad()
+
+    method bultosQueOcupa() = 1 + cosas.sum({c => c.bultosQueOcupa()})
+
+    method sufrirConsecuenciaDeLaCarga() {
+        cosas.forEach({c => c.sufrirConsecuenciaDeLaCarga()})
+    }
 }
 
 object residuosRadioactivos {
     var property peso = 0
 
     method peligrosidad() = 200
+
+    method bultosQueOcupa() = 1
+
+    method sufrirConsecuenciaDeLaCarga() {
+        peso += 15
+    }
 }
 
 object embalajeDeSeguridad {
@@ -103,4 +147,8 @@ object embalajeDeSeguridad {
     method peso() = cosaEmbalada.peso()
 
     method peligrosidad() = cosaEmbalada.peligrosidad() / 2
+
+    method bultosQueOcupa() = 2
+
+    method sufrirConsecuenciaDeLaCarga() {}
 }
